@@ -1,7 +1,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, RotateCcw } from 'lucide-react';
+import { Download, RotateCcw, Loader2 } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 interface ImagePreviewProps {
   originalImage: string | null;
@@ -21,6 +22,30 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   processingError,
 }) => {
   const [checkerboardBackground, setCheckerboardBackground] = useState<string>('');
+  const [progress, setProgress] = useState(0);
+
+  // Simulate progress when processing
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isLoading) {
+      setProgress(0);
+      interval = setInterval(() => {
+        setProgress(prev => {
+          // Slow down progress as it gets higher to simulate real processing
+          const increment = prev < 30 ? 5 : prev < 70 ? 3 : 1;
+          const newProgress = Math.min(prev + increment, 95);
+          return newProgress;
+        });
+      }, 300);
+    } else if (processedImage) {
+      setProgress(100);
+    }
+
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [isLoading, processedImage]);
 
   useEffect(() => {
     const size = 16;
@@ -88,7 +113,13 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                 style={{ maxHeight: '280px' }}
               />
             ) : isLoading ? (
-              <div className="animate-pulse-opacity">Processing...</div>
+              <div className="flex flex-col items-center p-4 w-full">
+                <Loader2 className="h-8 w-8 animate-spin mb-4" />
+                <div className="w-full max-w-xs">
+                  <Progress value={progress} className="h-2 mb-2" />
+                  <p className="text-center text-sm text-muted-foreground">Processing image... {progress}%</p>
+                </div>
+              </div>
             ) : processingError ? (
               <div className="text-destructive text-center p-4">
                 <p className="font-medium">Error Processing Image</p>
