@@ -44,7 +44,7 @@ const Header: React.FC = () => {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
-                  <DropdownMenuItem as="div">
+                  <DropdownMenuItem className="flex flex-col items-start">
                     <div className="text-sm font-medium">{user.email}</div>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={signOut}>Sign out</DropdownMenuItem>
