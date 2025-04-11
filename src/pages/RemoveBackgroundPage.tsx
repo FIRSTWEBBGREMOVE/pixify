@@ -14,19 +14,27 @@ const RemoveBackgroundPage: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [processingError, setProcessingError] = useState<string | null>(null);
+  const [processingAttempts, setProcessingAttempts] = useState<number>(0);
 
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
     setOriginalImage(URL.createObjectURL(file));
     setProcessedImage(null);
     setProcessingError(null);
+    setProcessingAttempts(0);
   };
 
   const handleRemoveBackground = async () => {
     if (!selectedFile) return;
+    if (processingAttempts >= 2) {
+      setProcessingError("Multiple processing attempts failed. Please try a different image or refresh the page.");
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(true);
     setProcessingError(null);
+    setProcessingAttempts(prev => prev + 1);
     
     try {
       toast.info('Processing image...', {
@@ -36,28 +44,30 @@ const RemoveBackgroundPage: React.FC = () => {
       const image = await loadImage(selectedFile);
       const processedBlob = await removeBackground(image);
       
+      // Only set the processed image if we're still in a loading state
+      // This prevents race conditions with multiple processing attempts
       setProcessedImage(URL.createObjectURL(processedBlob));
+      setIsLoading(false);
       toast.success('Background removed successfully!');
     } catch (error) {
       console.error('Error removing background:', error);
+      
+      // Check if we're still in loading state (not cancelled)
+      if (!isLoading) return;
       
       // More user-friendly error message
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       let userMessage = 'Failed to remove background.';
       
-      if (errorMessage.includes('WebGPU') || errorMessage.includes('GPU adapter')) {
-        userMessage = 'Your browser doesn\'t fully support WebGPU. We\'ll try WebAssembly instead.';
-        // Try again automatically with WASM
-        handleRemoveBackground();
-        return;
-      } else if (errorMessage.includes('memory') || errorMessage.includes('allocation')) {
+      if (errorMessage.includes('memory') || errorMessage.includes('allocation')) {
         userMessage = 'Not enough memory to process this image. Try a smaller image or a different device.';
+      } else {
+        userMessage = 'Image processing failed. Try using a smaller or simpler image.';
       }
       
       setProcessingError(userMessage);
-      toast.error(userMessage);
-    } finally {
       setIsLoading(false);
+      toast.error(userMessage);
     }
   };
 
@@ -66,6 +76,7 @@ const RemoveBackgroundPage: React.FC = () => {
     setProcessedImage(null);
     setSelectedFile(null);
     setProcessingError(null);
+    setProcessingAttempts(0);
   };
 
   return (
@@ -79,7 +90,7 @@ const RemoveBackgroundPage: React.FC = () => {
         <Alert className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            This feature uses AI to remove image backgrounds. It works best in Chrome browser with WebGPU support.
+            This feature uses AI to remove image backgrounds. It works best with images that have clear subjects and simple backgrounds.
           </AlertDescription>
         </Alert>
 
@@ -108,7 +119,8 @@ const RemoveBackgroundPage: React.FC = () => {
             <li>Ensure your subject is clearly visible and well-lit</li>
             <li>For complex edges (like hair), use high resolution images when possible</li>
             <li>If results aren't perfect, try adjusting the lighting or contrast of your original image</li>
-            <li>For best performance, use Google Chrome with WebGPU support enabled</li>
+            <li>Processing may take 15-30 seconds depending on your device</li>
+            <li>Simple images with clear subjects work best</li>
           </ul>
         </div>
       </div>

@@ -1,4 +1,3 @@
-
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to always download models
@@ -36,20 +35,12 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
   try {
     console.log('Starting background removal process...');
     
-    // Try with WebGPU first, fallback to WASM if not available
-    let segmenter;
-    try {
-      segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
-        device: 'webgpu',
-      });
-      console.log('Using WebGPU for processing');
-    } catch (gpuError) {
-      console.log('WebGPU not available, falling back to WASM:', gpuError);
-      segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
-        device: 'wasm',
-      });
-      console.log('Using WASM for processing');
-    }
+    // Try with CPU/WASM directly to avoid the WebGPU errors that might cause loops
+    console.log('Using WASM for processing');
+    const segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
+      device: 'cpu', // Explicitly use CPU to avoid GPU-related errors
+      quantized: true, // Use quantized model for better CPU performance
+    });
     
     // Convert HTMLImageElement to canvas
     const canvas = document.createElement('canvas');

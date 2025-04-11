@@ -23,27 +23,39 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
 }) => {
   const [checkerboardBackground, setCheckerboardBackground] = useState<string>('');
   const [progress, setProgress] = useState(0);
+  const [timeElapsed, setTimeElapsed] = useState(0);
 
-  // Simulate progress when processing
+  // Simulate progress when processing and track real time elapsed
   useEffect(() => {
     let interval: NodeJS.Timeout;
+    let timeInterval: NodeJS.Timeout;
     
     if (isLoading) {
       setProgress(0);
+      setTimeElapsed(0);
+      
+      // Update progress simulation
       interval = setInterval(() => {
         setProgress(prev => {
           // Slow down progress as it gets higher to simulate real processing
-          const increment = prev < 30 ? 5 : prev < 70 ? 3 : 1;
+          // More realistic progress bar that doesn't reach 100% too quickly
+          const increment = prev < 30 ? 3 : prev < 70 ? 1.5 : 0.5;
           const newProgress = Math.min(prev + increment, 95);
           return newProgress;
         });
-      }, 300);
+      }, 500);
+      
+      // Track actual time elapsed
+      timeInterval = setInterval(() => {
+        setTimeElapsed(prev => prev + 1);
+      }, 1000);
     } else if (processedImage) {
       setProgress(100);
     }
 
     return () => {
       if (interval) clearInterval(interval);
+      if (timeInterval) clearInterval(timeInterval);
     };
   }, [isLoading, processedImage]);
 
@@ -74,6 +86,14 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       link.click();
       document.body.removeChild(link);
     }
+  };
+
+  // Format time display
+  const formatTime = (seconds: number): string => {
+    if (seconds < 60) return `${seconds} seconds`;
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
 
   if (!originalImage) return null;
@@ -117,7 +137,19 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
                 <Loader2 className="h-8 w-8 animate-spin mb-4" />
                 <div className="w-full max-w-xs">
                   <Progress value={progress} className="h-2 mb-2" />
-                  <p className="text-center text-sm text-muted-foreground">Processing image... {progress}%</p>
+                  <p className="text-center text-sm text-muted-foreground">
+                    Processing image... {progress.toFixed(0)}%
+                    {timeElapsed > 3 && (
+                      <span className="block mt-1 text-xs">
+                        (Time elapsed: {formatTime(timeElapsed)})
+                      </span>
+                    )}
+                  </p>
+                  {timeElapsed > 20 && (
+                    <p className="text-center text-xs text-amber-600 mt-2">
+                      Processing is taking longer than usual. Please be patient.
+                    </p>
+                  )}
                 </div>
               </div>
             ) : processingError ? (
