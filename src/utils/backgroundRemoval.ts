@@ -1,3 +1,4 @@
+
 import { pipeline, env } from '@huggingface/transformers';
 
 // Configure transformers.js to always download models
@@ -34,9 +35,21 @@ function resizeImageIfNeeded(canvas: HTMLCanvasElement, ctx: CanvasRenderingCont
 export const removeBackground = async (imageElement: HTMLImageElement): Promise<Blob> => {
   try {
     console.log('Starting background removal process...');
-    const segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
-      device: 'webgpu',
-    });
+    
+    // Try with WebGPU first, fallback to CPU if not available
+    let segmenter;
+    try {
+      segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
+        device: 'webgpu',
+      });
+      console.log('Using WebGPU for processing');
+    } catch (gpuError) {
+      console.log('WebGPU not available, falling back to CPU:', gpuError);
+      segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
+        device: 'cpu',
+      });
+      console.log('Using CPU for processing');
+    }
     
     // Convert HTMLImageElement to canvas
     const canvas = document.createElement('canvas');

@@ -9,6 +9,7 @@ interface ImagePreviewProps {
   onRemoveBackground: () => void;
   onReset: () => void;
   isLoading: boolean;
+  processingError?: string | null;
 }
 
 const ImagePreview: React.FC<ImagePreviewProps> = ({
@@ -17,6 +18,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
   onRemoveBackground,
   onReset,
   isLoading,
+  processingError,
 }) => {
   const [checkerboardBackground, setCheckerboardBackground] = useState<string>('');
 
@@ -87,6 +89,11 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
               />
             ) : isLoading ? (
               <div className="animate-pulse-opacity">Processing...</div>
+            ) : processingError ? (
+              <div className="text-destructive text-center p-4">
+                <p className="font-medium">Error Processing Image</p>
+                <p className="text-sm mt-2">{processingError}</p>
+              </div>
             ) : (
               <div className="text-muted-foreground">
                 Click "Remove Background" to process
@@ -98,7 +105,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
       
       {/* Action buttons */}
       <div className="flex justify-center gap-4">
-        {!processedImage && !isLoading && (
+        {!processedImage && !isLoading && !processingError && (
           <Button onClick={onRemoveBackground} disabled={isLoading}>
             Remove Background
           </Button>
@@ -107,6 +114,12 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({
         {processedImage && (
           <Button onClick={handleDownload}>
             <Download className="mr-2 h-4 w-4" /> Download
+          </Button>
+        )}
+        
+        {processingError && (
+          <Button onClick={onRemoveBackground} disabled={isLoading}>
+            Try Again
           </Button>
         )}
         

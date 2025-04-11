@@ -11,21 +11,24 @@ const RemoveBackgroundPage: React.FC = () => {
   const [processedImage, setProcessedImage] = useState<string | null>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [processingError, setProcessingError] = useState<string | null>(null);
 
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
     setOriginalImage(URL.createObjectURL(file));
     setProcessedImage(null);
+    setProcessingError(null);
   };
 
   const handleRemoveBackground = async () => {
     if (!selectedFile) return;
 
     setIsLoading(true);
+    setProcessingError(null);
     
     try {
       toast.info('Processing image...', {
-        duration: 1000,
+        duration: 3000,
       });
       
       const image = await loadImage(selectedFile);
@@ -35,7 +38,19 @@ const RemoveBackgroundPage: React.FC = () => {
       toast.success('Background removed successfully!');
     } catch (error) {
       console.error('Error removing background:', error);
-      toast.error('Failed to remove background. Please try again.');
+      
+      // More user-friendly error message
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      let userMessage = 'Failed to remove background.';
+      
+      if (errorMessage.includes('WebGPU') || errorMessage.includes('GPU adapter')) {
+        userMessage = 'Your browser doesn\'t support WebGPU. Try using Chrome with the latest updates or a different device.';
+      } else if (errorMessage.includes('memory') || errorMessage.includes('allocation')) {
+        userMessage = 'Not enough memory to process this image. Try a smaller image or a different device.';
+      }
+      
+      setProcessingError(userMessage);
+      toast.error(userMessage);
     } finally {
       setIsLoading(false);
     }
@@ -45,6 +60,7 @@ const RemoveBackgroundPage: React.FC = () => {
     setOriginalImage(null);
     setProcessedImage(null);
     setSelectedFile(null);
+    setProcessingError(null);
   };
 
   return (
@@ -68,6 +84,7 @@ const RemoveBackgroundPage: React.FC = () => {
               onRemoveBackground={handleRemoveBackground}
               onReset={handleReset}
               isLoading={isLoading}
+              processingError={processingError}
             />
           )}
         </Card>
