@@ -1,3 +1,6 @@
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 239 84% 67%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -96,6 +99,24 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+
+  .animated-gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-purple to-brand-blue;
+  }
+}
+
+.drop-area {
+  transition: all 0.2s ease;
+  border-style: dashed;
+}
+
+.drop-area.active {
+  border-color: theme('colors.brand.purple');
+  background-color: rgba(99, 102, 241, 0.05);
 }
