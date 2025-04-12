@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
-import { HeartIcon, CoffeeIcon, GiftIcon } from 'lucide-react';
+import { HeartIcon, CoffeeIcon, GiftIcon, SparklesIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 const DonationOption = ({ 
   icon: Icon, 
@@ -18,52 +19,113 @@ const DonationOption = ({
   description: string;
   onDonate: () => void;
 }) => (
-  <Card className="flex flex-col h-full">
-    <CardHeader>
-      <div className="mb-2">
-        <Icon className="h-8 w-8 text-brand-purple" />
-      </div>
-      <CardTitle>{title}</CardTitle>
-      <CardDescription>{description}</CardDescription>
-    </CardHeader>
-    <CardContent className="flex-grow">
-      <div className="text-3xl font-bold text-center my-4">{amount}</div>
-    </CardContent>
-    <CardFooter>
-      <Button 
-        onClick={onDonate} 
-        className="w-full bg-brand-purple hover:bg-brand-purple/90"
-      >
-        Donate
-      </Button>
-    </CardFooter>
-  </Card>
+  <motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5 }}
+    whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0, 0, 0, 0.1)" }}
+  >
+    <Card className="flex flex-col h-full">
+      <CardHeader>
+        <motion.div 
+          className="mb-2" 
+          whileHover={{ rotate: [0, -10, 10, -10, 0] }}
+          transition={{ duration: 0.5 }}
+        >
+          <Icon className="h-8 w-8 text-brand-purple" />
+        </motion.div>
+        <CardTitle>{title}</CardTitle>
+        <CardDescription>{description}</CardDescription>
+      </CardHeader>
+      <CardContent className="flex-grow">
+        <motion.div 
+          className="text-3xl font-bold text-center my-4"
+          whileHover={{ scale: 1.1 }}
+          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+        >
+          {amount}
+        </motion.div>
+      </CardContent>
+      <CardFooter>
+        <Button 
+          onClick={onDonate} 
+          className="w-full bg-brand-purple hover:bg-brand-purple/90 group"
+        >
+          <span className="mr-2 group-hover:animate-bounce">Donate</span>
+          <SparklesIcon className="h-4 w-4 group-hover:animate-spin" />
+        </Button>
+      </CardFooter>
+    </Card>
+  </motion.div>
 );
 
 const DonationPage: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
+  const buyMeCoffeeUrl = "https://www.buymeacoffee.com/yourname"; // Replace with your actual Buy Me a Coffee URL
 
   const handleDonate = (amount: string) => {
     setIsProcessing(true);
     
-    // Simulate payment processing
+    // Simulate payment processing with animation
+    toast.success('Thank you for your donation!', {
+      description: `We're redirecting you to our Buy Me a Coffee page...`,
+      duration: 3000,
+    });
+    
+    // Redirect to Buy Me a Coffee after a short delay
     setTimeout(() => {
-      toast.success('Thank you for your donation!');
-      setIsProcessing(false);
-    }, 1500);
+      window.location.href = buyMeCoffeeUrl;
+    }, 2000);
   };
 
   return (
     <div className="container py-12">
-      <div className="text-center max-w-3xl mx-auto mb-12">
-        <div className="inline-block mb-4">
+      <motion.div 
+        className="text-center max-w-3xl mx-auto mb-12"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7 }}
+      >
+        <motion.div 
+          className="inline-block mb-4"
+          animate={{ 
+            scale: [1, 1.2, 1],
+            rotate: [0, 5, 0, -5, 0],
+            color: ["#6366F1", "#3B82F6", "#6366F1"]
+          }}
+          transition={{ 
+            duration: 3,
+            repeat: Infinity,
+            repeatType: "reverse"
+          }}
+        >
           <HeartIcon className="h-12 w-12 text-brand-purple mx-auto" />
-        </div>
-        <h1 className="text-4xl font-bold mb-4">Support Pixify</h1>
-        <p className="text-xl text-muted-foreground">
+        </motion.div>
+        <motion.h1 
+          className="text-4xl font-bold mb-4"
+          animate={{ 
+            backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+          }}
+          transition={{ duration: 5, repeat: Infinity }}
+          style={{ 
+            backgroundImage: "linear-gradient(90deg, #6366F1, #3B82F6, #6366F1)",
+            backgroundSize: "200% auto",
+            color: "transparent",
+            WebkitBackgroundClip: "text",
+            backgroundClip: "text"
+          }}
+        >
+          Support Pixify
+        </motion.h1>
+        <motion.p 
+          className="text-xl text-muted-foreground"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
           Your donations help us maintain our servers, API costs, and continue providing this tool free of charge to everyone.
-        </p>
-      </div>
+        </motion.p>
+      </motion.div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
         <DonationOption
@@ -91,7 +153,12 @@ const DonationPage: React.FC = () => {
         />
       </div>
 
-      <div className="mt-16 max-w-2xl mx-auto">
+      <motion.div 
+        className="mt-16 max-w-2xl mx-auto"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6, duration: 0.8 }}
+      >
         <Card>
           <CardContent className="pt-6">
             <h2 className="text-2xl font-bold mb-4">Why We Need Your Support</h2>
@@ -109,13 +176,18 @@ const DonationPage: React.FC = () => {
             </p>
           </CardContent>
         </Card>
-      </div>
+      </motion.div>
 
-      <div className="mt-12 text-center text-muted-foreground">
+      <motion.div 
+        className="mt-12 text-center text-muted-foreground"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.8, duration: 0.8 }}
+      >
         <p>
           For business inquiries or other ways to support the project, please contact us at <span className="font-medium">support@pixify.com</span>
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 };

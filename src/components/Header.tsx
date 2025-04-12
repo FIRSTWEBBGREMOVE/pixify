@@ -10,37 +10,63 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from '@/components/ui/dropdown-menu';
+import { motion } from 'framer-motion';
 
 const Header: React.FC = () => {
   const { user, signOut } = useAuth();
   
   return (
-    <header className="border-b">
+    <motion.header 
+      className="border-b"
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ type: "spring", stiffness: 100, damping: 20 }}
+    >
       <div className="container flex items-center justify-between py-4">
         <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold animated-gradient-text">Pixify</span>
+          <motion.span 
+            className="text-2xl font-bold animated-gradient-text"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Pixify
+          </motion.span>
         </Link>
-        <div className="flex items-center space-x-4">
+        <motion.div 
+          className="flex items-center space-x-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+        >
           <Button asChild variant="ghost">
             <Link to="/about">About</Link>
           </Button>
-          <Button asChild variant="ghost">
-            <Link to="/donation">Donate</Link>
-          </Button>
+          <motion.div whileHover={{ scale: 1.05 }}>
+            <Button asChild variant="ghost">
+              <Link to="/donation">Donate</Link>
+            </Button>
+          </motion.div>
           
           {user ? (
             <>
-              <Button asChild>
-                <Link to="/remove-background">Try Now</Link>
-              </Button>
+              <motion.div 
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button asChild>
+                  <Link to="/remove-background">Try Now</Link>
+                </Button>
+              </motion.div>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="icon" className="rounded-full">
-                    <Avatar>
-                      <AvatarFallback>
-                        {user.email?.charAt(0).toUpperCase() || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
+                    <motion.div whileHover={{ rotate: 10 }}>
+                      <Avatar>
+                        <AvatarFallback>
+                          {user.email?.charAt(0).toUpperCase() || 'U'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </motion.div>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
@@ -53,17 +79,21 @@ const Header: React.FC = () => {
             </>
           ) : (
             <>
-              <Button asChild variant="outline">
-                <Link to="/auth/login">Sign in</Link>
-              </Button>
-              <Button asChild>
-                <Link to="/auth/signup">Sign up</Link>
-              </Button>
+              <motion.div whileHover={{ scale: 1.05 }}>
+                <Button asChild variant="outline">
+                  <Link to="/auth/login">Sign in</Link>
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.05 }}>
+                <Button asChild>
+                  <Link to="/auth/signup">Sign up</Link>
+                </Button>
+              </motion.div>
             </>
           )}
-        </div>
+        </motion.div>
       </div>
-    </header>
+    </motion.header>
   );
 };
 
