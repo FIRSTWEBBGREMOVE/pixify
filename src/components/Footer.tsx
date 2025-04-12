@@ -11,7 +11,7 @@ const Footer: React.FC = () => {
             <h3 className="text-xl font-semibold mb-4 animated-gradient-text">Pixify</h3>
             <p className="text-muted-foreground">
               AI-powered background removal made simple and fast. 
-              Perfect for professionals and casual users alike.
+              Free for everyone to use.
             </p>
           </div>
           <div>
@@ -19,7 +19,7 @@ const Footer: React.FC = () => {
             <ul className="space-y-2">
               <li><Link to="/" className="text-muted-foreground hover:text-foreground">Home</Link></li>
               <li><Link to="/about" className="text-muted-foreground hover:text-foreground">About</Link></li>
-              <li><Link to="/pricing" className="text-muted-foreground hover:text-foreground">Pricing</Link></li>
+              <li><Link to="/donation" className="text-muted-foreground hover:text-foreground">Donate</Link></li>
               <li><Link to="/remove-background" className="text-muted-foreground hover:text-foreground">Remove Background</Link></li>
             </ul>
           </div>

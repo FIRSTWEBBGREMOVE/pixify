@@ -86,7 +86,7 @@ const RemoveBackgroundPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold mb-2">Remove Image Background</h1>
         <p className="text-muted-foreground mb-4">
-          Upload your image and we'll automatically remove the background.
+          Upload your image and we'll automatically remove the background. Completely free!
         </p>
         
         <Alert className="mb-6">

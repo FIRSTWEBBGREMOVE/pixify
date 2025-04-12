@@ -8,12 +8,12 @@ import Layout from "@/components/Layout";
 import HomePage from "@/pages/HomePage";
 import RemoveBackgroundPage from "@/pages/RemoveBackgroundPage";
 import AboutPage from "@/pages/AboutPage";
-import PricingPage from "@/pages/PricingPage";
 import NotFound from "@/pages/NotFound";
 import LoginPage from "@/pages/auth/LoginPage";
 import SignupPage from "@/pages/auth/SignupPage";
 import { AuthProvider } from "@/contexts/AuthContext";
 import ProtectedRoute from "@/components/ProtectedRoute";
+import DonationPage from "@/pages/DonationPage";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +30,7 @@ const App = () => (
             <Route element={<Layout />}>
               <Route path="/" element={<HomePage />} />
               <Route path="/about" element={<AboutPage />} />
-              <Route path="/pricing" element={<PricingPage />} />
+              <Route path="/donation" element={<DonationPage />} />
               <Route 
                 path="/remove-background" 
                 element={

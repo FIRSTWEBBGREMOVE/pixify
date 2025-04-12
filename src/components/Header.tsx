@@ -25,7 +25,7 @@ const Header: React.FC = () => {
             <Link to="/about">About</Link>
           </Button>
           <Button asChild variant="ghost">
-            <Link to="/pricing">Pricing</Link>
+            <Link to="/donation">Donate</Link>
           </Button>
           
           {user ? (

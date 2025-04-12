@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { ImageIcon, CheckIcon, ZapIcon, ShieldIcon } from 'lucide-react';
+import { ImageIcon, CheckIcon, ZapIcon, ShieldIcon, HeartIcon } from 'lucide-react';
 
 const HomePage: React.FC = () => {
   return (
@@ -16,14 +16,14 @@ const HomePage: React.FC = () => {
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground mb-8 max-w-2xl mx-auto">
             Remove image backgrounds instantly with our AI-powered tool.
-            Fast, accurate, and incredibly simple to use.
+            Fast, accurate, and completely free to use.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <Button asChild size="lg" className="text-lg px-8">
               <Link to="/remove-background">Try for Free</Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="text-lg">
-              <Link to="/pricing">View Pricing</Link>
+              <Link to="/donation">Support Us</Link>
             </Button>
           </div>
         </div>
@@ -107,12 +107,31 @@ const HomePage: React.FC = () => {
         </div>
       </section>
 
+      {/* Donation Section */}
+      <section className="py-16 bg-gradient-to-r from-pink-100 to-purple-100 dark:from-pink-950/20 dark:to-purple-950/20">
+        <div className="container text-center">
+          <div className="mx-auto max-w-3xl">
+            <div className="mb-6 inline-block p-3 rounded-full bg-brand-purple/10">
+              <HeartIcon className="h-8 w-8 text-brand-purple" />
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Support This Free Tool</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto text-muted-foreground">
+              Pixify is completely free to use, but server costs and API usage aren't. 
+              Consider supporting our project to keep it running for everyone.
+            </p>
+            <Button asChild size="lg" className="bg-brand-purple hover:bg-brand-purple/90 text-white px-8">
+              <Link to="/donation">Make a Donation</Link>
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-brand-purple to-brand-blue text-white">
         <div className="container text-center">
           <h2 className="text-3xl font-bold mb-4">Ready to remove backgrounds?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-            Join thousands of professionals who trust Pixify for their image editing needs.
+            Join thousands of users who trust Pixify for their image editing needs.
           </p>
           <Button asChild size="lg" variant="secondary" className="text-lg px-8">
             <Link to="/remove-background">Try Now - It's Free!</Link>
