@@ -7,8 +7,6 @@ import { loadImage, removeBackground } from '@/utils/backgroundRemoval';
 import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 
 const RemoveBackgroundPage: React.FC = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -17,10 +15,6 @@ const RemoveBackgroundPage: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [processingError, setProcessingError] = useState<string | null>(null);
   const [processingAttempts, setProcessingAttempts] = useState<number>(0);
-  const [apiKey, setApiKey] = useState<string>(() => {
-    // Try to load API key from localStorage
-    return localStorage.getItem('remove_bg_api_key') || '';
-  });
 
   const handleImageSelected = (file: File) => {
     setSelectedFile(file);
@@ -28,17 +22,6 @@ const RemoveBackgroundPage: React.FC = () => {
     setProcessedImage(null);
     setProcessingError(null);
     setProcessingAttempts(0);
-  };
-
-  const handleApiKeyChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newKey = e.target.value;
-    setApiKey(newKey);
-    // Save to localStorage
-    if (newKey) {
-      localStorage.setItem('remove_bg_api_key', newKey);
-    } else {
-      localStorage.removeItem('remove_bg_api_key');
-    }
   };
 
   const handleRemoveBackground = async () => {
@@ -59,7 +42,7 @@ const RemoveBackgroundPage: React.FC = () => {
       });
       
       const image = await loadImage(selectedFile);
-      const processedBlob = await removeBackground(image, selectedFile, apiKey || undefined);
+      const processedBlob = await removeBackground(image, selectedFile);
       
       // Only set the processed image if we're still in a loading state
       // This prevents race conditions with multiple processing attempts
@@ -76,8 +59,8 @@ const RemoveBackgroundPage: React.FC = () => {
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       let userMessage = 'Failed to remove background.';
       
-      if (apiKey && errorMessage.includes('API error')) {
-        userMessage = 'API error: Please check your remove.bg API key or try again later.';
+      if (errorMessage.includes('API error')) {
+        userMessage = 'API error: Please try again later.';
       } else if (errorMessage.includes('memory') || errorMessage.includes('allocation')) {
         userMessage = 'Not enough memory to process this image. Try a smaller image or a different device.';
       } else {
@@ -109,24 +92,9 @@ const RemoveBackgroundPage: React.FC = () => {
         <Alert className="mb-6">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
-            For best results, enter your remove.bg API key below. Without an API key, we'll use our built-in AI model which may be slower and less accurate.
+            We use the remove.bg API for best results. If that fails, our built-in AI model will be used as a fallback.
           </AlertDescription>
         </Alert>
-        
-        <div className="mb-6">
-          <Label htmlFor="api-key">remove.bg API Key (optional)</Label>
-          <Input
-            id="api-key"
-            type="password"
-            value={apiKey}
-            onChange={handleApiKeyChange}
-            placeholder="Enter your remove.bg API key"
-            className="mt-1"
-          />
-          <p className="text-xs text-muted-foreground mt-2">
-            Don't have an API key? <a href="https://www.remove.bg/api" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">Get one here</a>. Your key is stored locally in your browser.
-          </p>
-        </div>
 
         <Card className="p-6">
           {!originalImage ? (
@@ -149,7 +117,6 @@ const RemoveBackgroundPage: React.FC = () => {
         <div className="mt-12">
           <h2 className="text-xl font-semibold mb-4">Tips for best results</h2>
           <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
-            <li>For the best and fastest results, use a remove.bg API key</li>
             <li>Use images with good contrast between subject and background</li>
             <li>Ensure your subject is clearly visible and well-lit</li>
             <li>For complex edges (like hair), use high resolution images when possible</li>

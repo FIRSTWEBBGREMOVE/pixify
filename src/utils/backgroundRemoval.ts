@@ -5,6 +5,9 @@ import { pipeline, env } from '@huggingface/transformers';
 env.allowLocalModels = false;
 env.useBrowserCache = false;
 
+// Hard-coded API key for remove.bg
+const REMOVE_BG_API_KEY = 'kvfjF2PZ8Lkzco82837GGg8T';
+
 const MAX_IMAGE_DIMENSION = 1024;
 
 function resizeImageIfNeeded(canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D, image: HTMLImageElement) {
@@ -118,7 +121,7 @@ const removeBackgroundWithAI = async (imageElement: HTMLImageElement): Promise<B
 };
 
 // Function to remove background using remove.bg API
-export const removeBackgroundWithAPI = async (file: File, apiKey: string): Promise<Blob> => {
+const removeBackgroundWithAPI = async (file: File): Promise<Blob> => {
   try {
     console.log('Starting API background removal process...');
     const formData = new FormData();
@@ -127,7 +130,7 @@ export const removeBackgroundWithAPI = async (file: File, apiKey: string): Promi
     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
       method: 'POST',
       headers: {
-        'X-Api-Key': apiKey,
+        'X-Api-Key': REMOVE_BG_API_KEY,
       },
       body: formData,
     });
@@ -148,19 +151,17 @@ export const removeBackgroundWithAPI = async (file: File, apiKey: string): Promi
 };
 
 // Main function that tries API first, then falls back to AI
-export const removeBackground = async (imageElement: HTMLImageElement, file: File, apiKey?: string): Promise<Blob> => {
+export const removeBackground = async (imageElement: HTMLImageElement, file: File): Promise<Blob> => {
   try {
-    // If API key is provided, try the API method first
-    if (apiKey) {
-      try {
-        return await removeBackgroundWithAPI(file, apiKey);
-      } catch (error) {
-        console.warn('API method failed, falling back to AI method:', error);
-        // Fall back to AI method if API fails
-      }
+    // Always try the API method first since we have a hardcoded key
+    try {
+      return await removeBackgroundWithAPI(file);
+    } catch (error) {
+      console.warn('API method failed, falling back to AI method:', error);
+      // Fall back to AI method if API fails
     }
     
-    // Use AI method as fallback or if no API key provided
+    // Use AI method as fallback
     return await removeBackgroundWithAI(imageElement);
   } catch (error) {
     console.error('All background removal methods failed:', error);
