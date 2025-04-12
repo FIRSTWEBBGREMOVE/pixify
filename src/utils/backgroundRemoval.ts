@@ -39,7 +39,6 @@ export const removeBackground = async (imageElement: HTMLImageElement): Promise<
     console.log('Using WASM for processing');
     const segmenter = await pipeline('image-segmentation', 'Xenova/segformer-b0-finetuned-ade-512-512', {
       device: 'cpu', // Explicitly use CPU to avoid GPU-related errors
-      quantized: true, // Use quantized model for better CPU performance
     });
     
     // Convert HTMLImageElement to canvas
